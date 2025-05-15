@@ -1,0 +1,9 @@
+streamlit
+pandas
+plotly
+openpyxl
+xlsxwriter
+fpdf
+arabic-reshaper
+python-bidi
+scikit-learn
