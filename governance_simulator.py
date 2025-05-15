@@ -98,7 +98,7 @@ with tab1:
         st.table(df_percent.style.format({"المساهمة في المؤشر الكلي (%)": "{:.2f}"}))
 
         # توصيات مفصلة
-        st.markdown("### 🧠 توصيات تفصيلية:")
+        st.markdown("###  توصيات تفصيلية:")
         if transparency < 5:
             st.markdown("- 🔍 تحسين الشفافية والإفصاح.")
         if board_independence < 5:
@@ -178,7 +178,7 @@ with tab2:
             decrease_pct = round((capital - values[-1]) / capital * 100, 2)
             st.metric(label="النسبة المئوية للانخفاض في رأس المال", value=f"{decrease_pct}%")
 
-            st.markdown("### 🧠 توصيات مخصصة:")
+            st.markdown("###  توصيات مخصصة:")
             if st.session_state["governance_score"] < 6:
                 st.markdown("- 🔁 تحسين مؤشرات الحوكمة، خاصة الشفافية والمخاطر.")
             if shock_type == "خسائر تشغيلية":
@@ -352,7 +352,7 @@ with tab4:
             else:
                 st.error(f"❗ متوسط الحوكمة ضعيف ({avg_score:.2f})، حاجة لتحسين.")
 
-            st.markdown("### 🧠 توصيات:")
+            st.markdown("###  توصيات:")
             if avg_score < 5:
                 st.markdown("- 🛠️ تحسين شامل للحوكمة عبر المؤسسات.")
             elif avg_score < 8:
