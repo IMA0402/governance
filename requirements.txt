@@ -1,6 +1,6 @@
 streamlit
+numpy
 pandas
 plotly
-statsmodels
-numpy
-openpyxl
+cvxpy
+scipy
