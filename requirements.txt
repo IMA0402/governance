@@ -6,3 +6,4 @@ cvxpy
 scipy
 openpyxl
 statsmodels
+scikit-learn
