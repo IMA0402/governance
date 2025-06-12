@@ -4,6 +4,8 @@ import pandas as pd
 import plotly.express as px
 import cvxpy as cp
 import scipy.stats as stats
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 st.set_page_config(page_title="منصة الحوكمة المتقدمة", layout="wide")
 
