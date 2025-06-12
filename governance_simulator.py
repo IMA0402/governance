@@ -329,7 +329,16 @@ with tab3:
 
                         st.markdown("---")
                         st.markdown(f"#### 📌 معادلة الانحدار:")
-                        st.latex(f"{selected_metric} = {model.coef_[0]:.3f} \,\times\, \text{{مؤشر\_الحوكمة}} + {model.intercept_:.3f}")
+                        st.markdown(f"""
+                        <div style='background-color:#f0f2f6; padding:15px; border-radius:10px; font-size:18px;'>
+                        📌 <b>معادلة الانحدار (بالعربية):</b><br>
+                        💡 <b>{selected_metric} = {model.coef_[0]:.3f} × مؤشر الحوكمة + {model.intercept_:.3f}</b><br><br>
+                        🧮 هذا يعني أنه لكل وحدة زيادة في مؤشر الحوكمة، يرتفع <b>{selected_metric}</b> بمقدار <b>{model.coef_[0]:.3f}</b> نقطة تقريبًا.<br>
+                        📉 عندما يكون مؤشر الحوكمة = 0، فإن القيمة التقديرية لـ <b>{selected_metric}</b> تساوي <b>{model.intercept_:.3f}</b>.<br>
+                        📊 على سبيل المثال، إذا كانت درجة الحوكمة = 7، فإن:<br>
+                        <b>{selected_metric} = {model.coef_[0]:.3f} × 7 + {model.intercept_:.3f} = {(model.coef_[0] * 7 + model.intercept_):.3f}</b>
+                        </div>
+                        """, unsafe_allow_html=True)
 
                         st.markdown("### 🧠 تفسير النموذج:")
                         if r2 >= 0.7:
