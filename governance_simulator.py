@@ -84,6 +84,10 @@ with tab1:
             color=list(governance_metrics.values()),
             color_continuous_scale=px.colors.sequential.Blues
         )
+        fig_bar.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',   # خلفية الرسم
+            paper_bgcolor='rgba(0,0,0,0)'   # خلفية الشكل العام
+        )
         st.plotly_chart(fig_bar)
 
         # حساب المساهمة النسبية (النسبة المئوية)
