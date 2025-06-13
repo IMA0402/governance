@@ -75,21 +75,34 @@ with tab1:
         st.success(f"✅ مؤشر الحوكمة الكلي: {governance_score:.2f} / 10")
 
         # رسم بياني توزيع الدرجات
+        labels = ["الشفافية", "الاستقلالية", "المراجعة", "المخاطر", "حقوق المساهمين"]
+        values = list(governance_metrics.values())
+
+        # إنشاء DataFrame
+        df_bar = pd.DataFrame({
+            "المكون": labels,
+            "الدرجة": values
+        })
+
+        # رسم المخطط مع تدرج أزرق
         fig_bar = px.bar(
-            x=["الشفافية", "الاستقلالية", "المراجعة", "المخاطر", "حقوق المساهمين"],
-            y=list(governance_metrics.values()),
-            labels={"x": "المكون", "y": "الدرجة"},
+            df_bar,
+            x="المكون",
+            y="الدرجة",
             title="توزيع درجات مؤشرات الحوكمة",
             range_y=[0, 10],
-            color=list(governance_metrics.values()),
+            color="الدرجة",
             color_continuous_scale=px.colors.sequential.Blues
         )
+        # إزالة الخلفية البيضاء
         fig_bar.update_layout(
             plot_bgcolor='rgba(0,0,0,0)',   # خلفية الرسم
             paper_bgcolor='rgba(0,0,0,0)'   # خلفية الشكل العام
         )
-        st.plotly_chart(fig_bar)
 
+        # في Streamlit
+        st.plotly_chart(fig_bar)
+        
         # حساب المساهمة النسبية (النسبة المئوية)
         percentages = {k: governance_metrics[k] * weights[k] * 10 for k in governance_metrics}
 
