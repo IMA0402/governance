@@ -196,7 +196,7 @@ with tab2:
     if "governance_score" not in st.session_state:
         st.error("⚠️ الرجاء إدخال مؤشرات الحوكمة أولاً في التبويب 1.")
     else:
-        capital = st.number_input("رأس المال الحالي (بالمليون)", min_value=0.0, value=100.0)
+        capital = st.number_input("رأس المال الحالي (بالدرهم)", min_value=0.00, value=100.0)
         shock_type = st.selectbox("نوع الصدمة", ["انخفاض في السيولة", "خسائر تشغيلية", "تشديد رقابي"])
 
         def simulate_adjustment(capital, governance_score, shock_type):
