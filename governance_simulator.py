@@ -87,7 +87,7 @@ with tab1:
         st.plotly_chart(fig_bar)
 
         # حساب المساهمة النسبية (النسبة المئوية)
-        percentages = {k: governance_metrics[k] * weights[k] * 10 for k in governance_metrics}
+        percentages = {k: governance_metrics[k] * weights[k] * 100 for k in governance_metrics}
 
         labels_ar = {
             "transparency": "الشفافية",
