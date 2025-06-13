@@ -82,7 +82,7 @@ with tab1:
             title="توزيع درجات مؤشرات الحوكمة",
             range_y=[0, 10],
             color=list(governance_metrics.values()),
-            color_continuous_scale=px.colors.sequential.Teal
+            color_continuous_scale=px.colors.sequential.Blues
         )
         st.plotly_chart(fig_bar)
 
