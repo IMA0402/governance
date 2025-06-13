@@ -92,15 +92,24 @@ with tab1:
             title="توزيع درجات مؤشرات الحوكمة",
             range_y=[0, 10],
             color="الدرجة",
-            color_continuous_scale=px.colors.sequential.Blues
+            color_continuous_scale=px.colors.sequential.Blues_r
         )
         # إزالة الخلفية البيضاء
         fig_bar.update_layout(
             plot_bgcolor='rgba(0,0,0,0)',   # خلفية الرسم
             paper_bgcolor='rgba(0,0,0,0)'   # خلفية الشكل العام
         )
-
-        # في Streamlit
+        # إزالة الخلفيات البيضاء وتعديل النصوص
+        fig_bar.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',      # خلفية الرسم شفافة
+            paper_bgcolor='rgba(0,0,0,0)',     # خلفية الشكل شفافة
+            font=dict(color='black', size=14), # خطوط داكنة وواضحة
+            title_font=dict(size=18, color='black'),
+            xaxis=dict(showgrid=False, tickfont=dict(color='black')),
+            yaxis=dict(showgrid=True, gridcolor='lightgray', tickfont=dict(color='black'))
+        )
+        
+# عرض الرسم البياني
         st.plotly_chart(fig_bar)
         
         # حساب المساهمة النسبية (النسبة المئوية)
