@@ -84,32 +84,35 @@ with tab1:
             "الدرجة": values
         })
 
-        # رسم المخطط مع تدرج أزرق
+        # ربط كل مكون بلونه الخاص
+        custom_colors = {
+            "الشفافية": "#1f77b4",
+            "الاستقلالية": "#2ca02c",
+            "المراجعة": "#ff7f0e",
+            "المخاطر": "#d62728",
+            "حقوق المساهمين": "#9467bd"
+        }
+
+        # رسم العمود بدون تدرج لوني تلقائي
         fig_bar = px.bar(
             df_bar,
             x="المكون",
             y="الدرجة",
             title="توزيع درجات مؤشرات الحوكمة",
-            range_y=[0, 10],
-            color="الدرجة",
-            color_continuous_scale=px.colors.sequential.Blues_r
+            color="المكون",  # التلوين حسب الفئة وليس القيمة
+            color_discrete_map=custom_colors,
+            range_y=[0, 10]
         )
-        # إزالة الخلفية البيضاء
+
+        # إزالة الخلفية البيضاء وتنسيق الخط
         fig_bar.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)',   # خلفية الرسم
-            paper_bgcolor='rgba(0,0,0,0)'   # خلفية الشكل العام
-        )
-        # إزالة الخلفيات البيضاء وتعديل النصوص
-        fig_bar.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)',      # خلفية الرسم شفافة
-            paper_bgcolor='rgba(0,0,0,0)',     # خلفية الشكل شفافة
-            font=dict(color='black', size=14), # خطوط داكنة وواضحة
-            title_font=dict(size=18, color='black'),
-            xaxis=dict(showgrid=False, tickfont=dict(color='black')),
-            yaxis=dict(showgrid=True, gridcolor='lightgray', tickfont=dict(color='black'))
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='black', size=14),
+            title_font=dict(size=18, color='black')
         )
         
-# عرض الرسم البياني
+        # عرض الرسم البياني
         st.plotly_chart(fig_bar)
         
         # حساب المساهمة النسبية (النسبة المئوية)
