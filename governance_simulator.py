@@ -560,14 +560,11 @@ with tab5:
         else:
             st.success("- 🚀 جميع الوحدات لديها زمن تعديل مقبول.")
 
-
 # تبويب 6: تحسين العائد باستخدام لاكرانج + مؤشرات المخاطر + نموذج تحسين متعدد
 with tab6:
     st.subheader("6️⃣ تحسين العائد باستخدام مضاعفات لاكرانج")
 
     st.markdown("📝 في هذا القسم يتم تحسين توزيع الاستثمارات لتحقيق أعلى عائد ممكن ضمن قيود المخاطر والحدود التنظيمية.")
-
-    total_capital = st.number_input("💰 القيمة الإجمالية المتاحة للاستثمار (بالدرهم)", min_value=1.0, value=3_000_000.0)
 
     with st.expander("📘 ما هي منهجية تحسين العائد مقابل المخاطرة؟"):
         st.markdown("""
@@ -582,21 +579,23 @@ with tab6:
         هذه المنهجية تتيح اختيار أفضل توزيع للأصول لتحقيق أفضل أداء مالي ممكن ضمن قيود المخاطر والتنظيم.
         """)
 
+    total_capital = st.number_input("💰 القيمة الإجمالية للاستثمار (بالدرهم)", 10000.0, 1e8, 100000.0, step=1000.0)
+
     n_assets = st.number_input("🔢 عدد الاستثمارات", 2, 10, 3)
     r_list, max_list, min_list = [], [], []
-
     for i in range(int(n_assets)):
         r = st.number_input(f"📈 عائد الاستثمار {i+1} (%)", key=f"r{i}")
-        max_dh = st.number_input(f"🔒 الحد الأقصى للاستثمار {i+1} (بالدرهم)", min_value=0.0, value=1_000_000.0, key=f"max{i}")
-        min_dh = st.number_input(f"⬇️ الحد الأدنى للاستثمار {i+1} (بالدرهم)", min_value=0.0, value=100_000.0, key=f"min{i}")
-        
+        max_dh = st.number_input(f"🔒 الحد الأقصى للاستثمار {i+1} (درهم)", 0.0, total_capital, total_capital, key=f"m{i}")
+        min_dh = st.number_input(f"⬇️ الحد الأدنى للاستثمار {i+1} (درهم)", 0.0, total_capital, 0.0, key=f"mn{i}")
+
         r_list.append(r / 100)
-        max_list.append(max_dh / total_capital)  # تحويل القيمة إلى نسبة (وزن)
+        max_list.append(max_dh / total_capital)
         min_list.append(min_dh / total_capital)
 
-    cov_matrix = np.identity(int(n_assets)) * 0.02  # مصفوفة التغاير (بسيطة مؤقتًا)
+    cov_matrix = np.identity(int(n_assets)) * 0.02  # تغاير بسيط لكل أصل (افتراضي)
 
     if st.button("🚀 تنفيذ تحسين العائد"):
+
         r = np.array(r_list)
         max_c = np.array(max_list)
         min_c = np.array(min_list)
@@ -609,7 +608,7 @@ with tab6:
         if unused > 0:
             room = max_c - w
             room[room < 0] = 0
-            share = room / room.sum()
+            share = room / room.sum() if room.sum() > 0 else 0
             w += unused * share
 
         if w.sum() > 1:
@@ -622,6 +621,7 @@ with tab6:
         risk_free_rate = 0.02
         sharpe_ratio = (p_return - risk_free_rate) / port_std if port_std != 0 else 0
 
+        # تحليل الحساسية للعائد
         sensitivity = []
         delta = 0.01
         for i in range(len(r)):
@@ -639,15 +639,18 @@ with tab6:
         df_result = pd.DataFrame({
             "الاستثمار": [f"استثمار {i+1}" for i in range(n_assets)],
             "الوزن الأمثل": w,
+            "القيمة بالدرهم": w * total_capital,
             "العائد المتوقع (%)": r * 100,
             "المساهمة في العائد (%)": w * r * 100,
-            "الحد الأقصى (درهم)": np.array(max_list) * total_capital,
-            "الحد الأدنى (درهم)": np.array(min_list) * total_capital,
+            "الحد الأقصى (درهم)": max_c * total_capital,
+            "الحد الأدنى (درهم)": min_c * total_capital,
             "حساسية العائد": sensitivity
         })
 
         st.dataframe(df_result.style.format({
             "الوزن الأمثل": "{:.2%}",
+            "القيمة بالدرهم": "{:,.0f}",
+            "العائد المتوقع (%)": "{:.2f}",
             "المساهمة في العائد (%)": "{:.2f}",
             "الحد الأقصى (درهم)": "{:,.0f}",
             "الحد الأدنى (درهم)": "{:,.0f}",
@@ -663,34 +666,39 @@ with tab6:
         st.write(f"📌 الفرق بسبب القيود: {(unconstrained_return - p_return)*100:.2f}%")
 
         fig = px.bar(df_result, x="الاستثمار", y="الوزن الأمثل", color="العائد المتوقع (%)",
-                     labels={"الوزن الأمثل": "الوزن الأمثل (%)", "العائد المتوقع (%)": "العائد المتوقع (%)"})
+                     labels={"الوزن الأمثل": "الوزن الأمثل (%)", "العائد المتوقع (%)": "العائد (%)"})
         st.plotly_chart(fig)
 
-        # --- نموذج تحسين باستخدام CVXPY ---
+        # --- نموذج تحسين العائد مقابل المخاطرة باستخدام CVXPY ---
         st.subheader("تحسين العائد مقابل المخاطرة باستخدام CVXPY")
 
         n = len(r_list)
         w_var = cp.Variable(n)
         r_arr = np.array(r_list)
-        cov = np.diag(np.full(n, 0.02))  # تغاير ثابت افتراضي
+        cov = np.diag(np.full(n, 0.02))  # تغاير افتراضي ثابت
 
-        _lambda = 0.1  # عامل الخطر
+        _lambda = 0.1  # معاملة المخاطرة
 
         objective = cp.Maximize(r_arr.T @ w_var - _lambda * cp.quad_form(w_var, cov))
-        constraints = [cp.sum(w_var) == 1,
-                       w_var >= np.array(min_list),
-                       w_var <= np.array(max_list)]
+        constraints = [cp.sum(w_var) == 1, w_var >= min_c, w_var <= max_c]
         prob = cp.Problem(objective, constraints)
         prob.solve()
 
-        optimal_weights = w_var.value
+        if prob.status == "optimal" and w_var.value is not None and not np.any(np.isnan(w_var.value)):
+            optimal_weights = w_var.value
+            df_opt = pd.DataFrame({
+                "الاستثمار": [f"استثمار {i+1}" for i in range(n)],
+                "الوزن الأمثل (CVXPY)": optimal_weights,
+                "القيمة بالدرهم": optimal_weights * total_capital
+            })
+            st.dataframe(df_opt.style.format({
+                "الوزن الأمثل (CVXPY)": "{:.2%}",
+                "القيمة بالدرهم": "{:,.0f}"
+            }))
+        else:
+            st.error("❌ لم يتم التوصل إلى توزيع أمثل باستخدام CVXPY. تحقق من القيود أو معاملات العائد.")
 
-        df_opt = pd.DataFrame({
-            "الاستثمار": [f"استثمار {i+1}" for i in range(n)],
-            "الوزن الأمثل (CVXPY)": optimal_weights
-        })
-        st.dataframe(df_opt.style.format({"الوزن الأمثل (CVXPY)": "{:.2%}"}))
-
+        # توصيات ذكية
         st.markdown("### 🤖 توصيات:")
         if sharpe_ratio < 1:
             st.warning("مخاطر المحفظة عالية نسبيًا، يُنصح بإعادة توزيع الأوزان أو زيادة التنويع.")
